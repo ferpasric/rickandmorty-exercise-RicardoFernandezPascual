@@ -1,0 +1,7 @@
+
+rickandmortyapi:
+    character:
+      url: https://rickandmortyapi.com/api/character
+
+server:
+    port: 3456
