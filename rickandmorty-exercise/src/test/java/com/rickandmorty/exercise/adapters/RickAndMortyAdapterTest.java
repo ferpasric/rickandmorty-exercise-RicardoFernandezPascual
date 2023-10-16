@@ -10,6 +10,7 @@ import org.modelmapper.internal.util.Assert;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
@@ -88,6 +89,38 @@ class RickAndMortyAdapterTest {
 
         // THEN
         Assert.isTrue(characterDTO.getFirstAppearance().equals(expectedFirstAppearance));
+    }
+
+    @Test
+    void searchCharacterAppearanceNotFoundTest() {
+
+        // GIVEN
+        RestTemplate restTemplate = Mockito.mock(RestTemplate.class);
+        RickAndMortyAdapter rickAndMortyAdapter = new RickAndMortyAdapter(restTemplate);
+        String name = "Rick Sanchez";
+
+        String url = "http://rickandmortyapi";
+        ReflectionTestUtils.setField(rickAndMortyAdapter, "url", url);
+
+        ResponseEntity responseEntity = Mockito.mock(ResponseEntity.class);
+
+        Mockito.when(restTemplate.exchange(
+                Mockito.contains(url), Mockito.any(HttpMethod.class), Mockito.any(HttpEntity.class), Mockito.any(
+                        ParameterizedTypeReference.class))).thenReturn(responseEntity);
+
+        ListRickAndMortyCharacterDTO listRickAndMortyCharacterDTO = new ListRickAndMortyCharacterDTO();
+        Mockito.when(responseEntity.getBody()).thenReturn(listRickAndMortyCharacterDTO);
+
+        // WHEN
+        try {
+            CharacterDTO characterDTO = rickAndMortyAdapter.searchCharacterAppearance(name);
+        }
+
+        catch(org.springframework.web.client.HttpClientErrorException e){
+            Assert.isTrue(e.getStatusCode() == HttpStatus.NOT_FOUND);
+        }
+
+        //
     }
 
 }

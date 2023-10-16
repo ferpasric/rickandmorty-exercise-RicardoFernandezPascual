@@ -44,4 +44,5 @@ public class RickAndMortyCharacterDTO implements Serializable {
     public void setEpisodesUrl(List<String> episodesUrl) {
         this.episodesUrl = episodesUrl;
     }
+
 }
